@@ -1,7 +1,13 @@
 - hosts: localhost
+  become: no
+
   collections:
     - community.general
 
+  vars:
+    username: "{{ ansible_user_id }}"
+
   tasks:
     - name: Echo init message
-      command: echo "Playing system-workstation.yml"
+      debug:
+        msg: Playing system-workstation.yml as user {{ username }}

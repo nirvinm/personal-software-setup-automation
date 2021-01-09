@@ -10,7 +10,7 @@
   tasks:
     - name: Echo init message
       debug:
-        msg: "Playing system-ostree.yml as user {{ username }}"
+        msg: Playing system-ostree.yml as user {{ username }}
 
     - name: Layer core packages
       command:

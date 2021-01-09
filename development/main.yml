@@ -10,7 +10,7 @@
   tasks:
     - name: Echo init message
       debug:
-        msg: "Playing main.yml as user {{ username }}"
+        msg: Playing main.yml as user {{ username }}
 
     - name: Enabling ZRAM Swap
       become: yes
@@ -85,7 +85,7 @@
         name: "{{ username }}"
         shell: /usr/bin/fish
 
-    - name: "Download oh-my-fish install script"
+    - name: Download oh-my-fish install script
       get_url:
         url: https://get.oh-my.fish
         dest: ~/oh-my.fish

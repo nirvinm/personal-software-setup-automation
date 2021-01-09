@@ -10,7 +10,7 @@
   tasks:
     - name: Echo init message
       debug:
-        msg: "Playing config.yml as user {{ username }}"
+        msg: Playing config.yml as user {{ username }}
 
     - name: Copy Nvidia configuration for customization
       become: yes
