@@ -1,6 +1,6 @@
 - hosts: localhost
   become: no
-  
+
   collections:
     - community.general
 
@@ -174,6 +174,12 @@
               nvm use default
             end
           end
+
+    - name: Install OpenJDK
+      become: yes
+      zypper:
+        name: java-11-openjdk
+        state: present
 
     - name: Install dotnet 5 sdk
       become: yes
