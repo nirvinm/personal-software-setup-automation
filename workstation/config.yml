@@ -1,10 +1,16 @@
 - hosts: localhost
+  become: no
+  
   collections:
     - community.general
+  
+  vars:
+    username: "{{ ansible_user_id }}"
 
   tasks:
     - name: Echo init message
-      command: echo "Playing config.yml"
+      debug:
+        msg: "Playing config.yml as user {{ username }}"
 
     - name: Copy Nvidia configuration for customization
       become: yes
@@ -30,7 +36,7 @@
         value: "{{ item.value }}"
       with_items:
         - { section: "daemon", option: "AutomaticLoginEnable", value: "True" }
-        - { section: "daemon", option: "AutomaticLogin", value: "{{ lookup('env','USER') }}" }
+        - { section: "daemon", option: "AutomaticLogin", value: "{{ username }}" }
 
     - name: Enable Cockpit
       become: yes

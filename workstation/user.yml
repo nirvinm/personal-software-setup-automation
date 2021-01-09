@@ -1,10 +1,17 @@
 - hosts: localhost
+  become: no
+  
   collections:
     - community.general
 
+  vars:
+    username: "{{ ansible_user_id }}"
+
   tasks:
     - name: Echo init message
-      command: echo "Playing user.yml"
+      debug:
+        msg: "Playing user.yml as user {{ username }}"
+
 
     - name: Add the flathub flatpak repository remote to the user installation
       community.general.flatpak_remote:

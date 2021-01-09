@@ -1,10 +1,16 @@
 - hosts: localhost
+  become: no
+  
   collections:
     - community.general
 
+  vars:
+    username: "{{ ansible_user_id }}"
+
   tasks:
     - name: Echo init message
-      command: echo "Playing system-ostree.yml"
+      debug:
+        msg: "Playing system-ostree.yml as user {{ username }}"
 
     - name: Layer core packages
       command:
