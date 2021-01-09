@@ -1,0 +1,58 @@
+- hosts: localhost
+  collections:
+    - community.general
+
+  tasks:
+    - name: Echo init message
+      command: echo "Playing config.yml"
+
+    - name: Copy Nvidia configuration for customization
+      become: yes
+      copy:
+        src: /usr/share/X11/xorg.conf.d/nvidia.conf
+        dest: /etc/X11/xorg.conf.d/nvidia.conf
+
+    # Enable Nvidia DynamicPowerManagement
+    # http://download.nvidia.com/XFree86/Linux-x86_64/440.31/README/dynamicpowermanagement.html
+    - name: Enable Nvidia Dynamic Power Managment
+      become: yes
+      copy:
+        dest: "/etc/modprobe.d/nvidia.conf"
+        content: "options nvidia NVreg_DynamicPowerManagement=0x02\n"
+
+    - name: Configure auto-login for current user
+      become: yes
+      community.general.ini_file:
+        path: /etc/gdm/custom.conf
+        backup: yes
+        section: "{{ item.section }}"
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      with_items:
+        - { section: "daemon", option: "AutomaticLoginEnable", value: "True" }
+        - { section: "daemon", option: "AutomaticLogin", value: "{{ lookup('env','USER') }}" }
+
+    - name: Enable Cockpit
+      become: yes
+      systemd:
+        name: cockpit.socket
+        enabled: yes
+        state: started
+
+    - name: Create directory for Virtual Machines with CoW disabled
+      file:
+        path: ~/Virtual_Machines
+        state: directory
+        attributes: +C
+        recurse: yes
+
+    - name: Add polkit rule to allow Virt-Manager to manage virtual machines
+      become: yes
+      copy:
+        dest: /etc/polkit-1/rules.d/80-libvirt-manage.rules
+        content: |
+          polkit.addRule(function(action, subject) {
+            if (action.id == "org.libvirt.unix.manage" && subject.local && subject.active && subject.isInGroup("wheel")) {
+                return polkit.Result.YES;
+            }
+          });

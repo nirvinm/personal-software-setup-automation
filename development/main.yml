@@ -1,0 +1,215 @@
+- hosts: localhost
+  become: no
+  collections:
+    - community.general
+
+  vars:
+    username: "{{ ansible_user_id }}"
+
+  tasks:
+    - name: Echo init message
+      debug:
+        msg: "Playing main.yml as user {{ username }}"
+
+    - name: Enabling ZRAM Swap
+      become: yes
+      systemd:
+        name: zramswap.service
+        enabled: yes
+        state: started
+
+    - name: Disable unnecessary systemd services
+      become: yes
+      systemd:
+        name: "{{ item }}"
+        enabled: no
+        state: stopped
+      with_items:
+        - packagekit
+        - check-battery.service
+        - upower.service
+        - avahi-daemon.service
+        - ModemManager.service
+
+    - name: Add OpenSUSE Shells repository
+      become: yes
+      community.general.zypper_repository:
+        name: "Shells for Linux (openSUSE_Leap_15.2)"
+        repo: "https://download.opensuse.org/repositories/shells/openSUSE_Leap_15.2/"
+        state: present
+        auto_import_keys: yes
+      ignore_errors: yes
+
+    - name: Add OpenSUSE Text Editors repository
+      become: yes
+      community.general.zypper_repository:
+        name: "Text editors and hex editors for Linux (openSUSE_Leap_15.2)"
+        repo: "https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.2/"
+        state: present
+        auto_import_keys: yes
+      ignore_errors: yes
+
+    - name: Add Microsoft dotnet repository to zypper
+      become: yes
+      community.general.zypper_repository:
+        repo: "https://packages.microsoft.com/config/opensuse/15/prod.repo"
+        state: present
+        auto_import_keys: yes
+      ignore_errors: yes
+
+    - name: Add Microsoft VSCode repository to zypper
+      become: yes
+      community.general.zypper_repository:
+        name: "Visual Studio Code"
+        repo: "https://packages.microsoft.com/yumrepos/vscode"
+        state: present
+        auto_import_keys: yes
+      ignore_errors: yes
+
+    - name: Refresh all repos
+      become: yes
+      community.general.zypper_repository:
+        repo: "*"
+        runrefresh: yes
+
+    - name: Install fish shell
+      become: yes
+      zypper:
+        name: fish
+        state: present
+
+    - name: Change default shell to fish
+      become: yes
+      user:
+        name: "{{ username }}"
+        shell: /usr/bin/fish
+
+    - name: "Download oh-my-fish install script"
+      get_url:
+        url: https://get.oh-my.fish
+        dest: ~/oh-my.fish
+        validate_certs: no
+
+    - name: Install oh-my-fish
+      command: fish ~/oh-my.fish
+      ignore_errors: yes
+
+    - name: Install bass
+      shell: echo "omf install bass" | fish
+
+    - name: Install Git
+      become: yes
+      zypper:
+        name: git
+        state: present
+
+    - name: Install Docker
+      become: yes
+      zypper:
+        name: docker
+        state: present
+
+    - name: Install docker-compose
+      become: yes
+      zypper:
+        name: python3-docker-compose
+        state: present
+
+    - name: Add current user to docker group
+      become: yes
+      user:
+        name: "{{ username }}"
+        groups: docker
+        append: yes
+
+    - name: Enable docker service
+      become: yes
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Download NVM install script
+      get_url:
+        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh
+        dest: ~/nvm-install.sh
+
+    - name: Install NVM
+      command: sh ~/nvm-install.sh
+
+    - name: Configure NVM - Create function - Step 1
+      copy:
+        dest: ~/.config/fish/functions/nvm.fish
+        content: |
+          function nvm
+            bass source ~/.nvm/nvm.sh --no-use ';' nvm $argv
+          end
+
+    - name: Configure NVM - Create function - Step 2
+      copy:
+        dest: ~/.config/fish/functions/nvm_find_nvmrc.fish
+        content: |
+          function nvm_find_nvmrc
+            bass source ~/.nvm/nvm.sh --no-use ';' nvm_find_nvmrc
+          end
+
+    - name: Configure NVM - Create function - Step 3
+      copy:
+        dest: ~/.config/fish/functions/load_nvm.fish
+        content: |
+          function load_nvm --on-variable="PWD"
+            set -l default_node_version (nvm version default)
+            set -l node_version (nvm version)
+            set -l nvmrc_path (nvm_find_nvmrc)
+            if test -n "$nvmrc_path"
+              set -l nvmrc_node_version (nvm version (cat $nvmrc_path))
+              if test "$nvmrc_node_version" = "N/A"
+                nvm install (cat $nvmrc_path)
+              else if test nvmrc_node_version != node_version
+                nvm use $nvmrc_node_version
+              end
+            else if test "$node_version" != "$default_node_version"
+              echo "Reverting to default Node version"
+              nvm use default
+            end
+          end
+
+    - name: Install dotnet 5 sdk
+      become: yes
+      zypper:
+        name: dotnet-sdk-5.0
+        state: present
+
+    - name: Install VSCode
+      become: yes
+      zypper:
+        name: code
+        state: present
+
+    - name: Install emacs
+      become: yes
+      zypper:
+        name: emacs
+        state: present
+
+    - name: Install Powerline status plugin for terminal
+      pip:
+        name: powerline
+
+    - name: Configure fish
+      copy:
+        dest: ~/.config/fish/config.fish
+        content: |
+          set PATH $HOME/.local/bin/ $HOME/.dotnet/tools/ $HOME/.nvm/ $PATH
+
+          # Powerline Status
+          powerline-daemon -q
+          set fish_function_path $fish_function_path "$HOME/.local/lib/python3.6/site-packages/powerline/bindings/fish"
+          powerline-setup
+
+          set DOTNET_CLI_TELEMETRY_OPTOUT 1
+
+          # NVM
+          load_nvm
+
+          echo "Hello there! Fish is ready for swim."

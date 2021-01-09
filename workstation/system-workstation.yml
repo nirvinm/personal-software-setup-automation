@@ -1,0 +1,7 @@
+- hosts: localhost
+  collections:
+    - community.general
+
+  tasks:
+    - name: Echo init message
+      command: echo "Playing system-workstation.yml"

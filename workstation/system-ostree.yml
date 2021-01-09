@@ -1,0 +1,57 @@
+- hosts: localhost
+  collections:
+    - community.general
+
+  tasks:
+    - name: Echo init message
+      command: echo "Playing system-ostree.yml"
+
+    - name: Layer core packages
+      command:
+        rpm-ostree install --idempotent \
+          intel-media-driver \
+          akmod-nvidia \
+          xorg-x11-drv-nvidia \
+          xorg-x11-drv-nvidia-cuda \
+          xorg-x11-drv-nvidia-cuda-libs \
+          vdpauinfo \
+          libva-vdpau-driver \
+          libva-utils \
+          cockpit \
+          cockpit-system \
+          cockpit-ostree \
+          cockpit-podman \
+          cockpit-machines \
+          cockpit-selinux \
+          fish \
+          compsize \
+          lm_sensors \
+          smartmontools \
+          spectre-meltdown-checker \
+          tlp \
+          tlp-rdw \
+          tuned \
+          tuned-profiles-compat \
+          tuned-utils \
+          gnome-tweaks \
+          firewall-config \
+          qemu \
+          qemu-kvm \
+          libvirt-client \
+          libvirt-nss \
+          libvirt-daemon-kvm \
+          libvirt-daemon-config-network \
+          libvirt-dbus \
+          virt-install \
+          virt-viewer \
+          virt-manager \
+
+    - name: Layer VeraCrypt
+      command:
+        rpm-ostree install --idempotent https://launchpad.net/veracrypt/trunk/1.24-update7/+download/veracrypt-1.24-Update7-CentOS-8-x86_64.rpm
+
+    # This might not be needed at some point when Silverblue will support the standard way to specify this.
+    - name: Disable Nouveau drivers
+      become: yes
+      command:
+        rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1

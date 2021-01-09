@@ -1,0 +1,153 @@
+- hosts: localhost
+  collections:
+    - community.general
+
+  tasks:
+    - name: Echo init message
+      command: echo "Playing user.yml"
+
+    - name: Add the flathub flatpak repository remote to the user installation
+      community.general.flatpak_remote:
+        name: flathub
+        state: present
+        flatpakrepo_url: https://flathub.org/repo/flathub.flatpakrepo
+        method: user
+
+    # This is only required on Silverblue to update in-built flatpaks. But this won't hurt in Workstation either.
+    - name: Update existing Flatpaks
+      command: flatpak update --noninteractive
+
+    - name: Create autostart directory if not exists
+      file:
+        path: ~/.config/autostart
+        state: directory
+
+    - name: Install NextCloud
+      community.general.flatpak:
+        name: com.nextcloud.desktopclient.nextcloud
+        state: present
+        method: user
+
+    - name: Configure auto-start for NextCloud
+      copy:
+        src: ~/.local/share/flatpak/exports/share/applications/com.nextcloud.desktopclient.nextcloud.desktop
+        dest: ~/.config/autostart/com.nextcloud.desktopclient.nextcloud.desktop
+
+    - name: Install Firefox
+      community.general.flatpak:
+        name: org.mozilla.firefox
+        state: present
+        method: user
+
+    - name: Install GNOME Web
+      community.general.flatpak:
+        name: org.gnome.Epiphany
+        state: present
+        method: user
+
+    - name: Install Tor Browser Launcher
+      community.general.flatpak:
+        name: com.github.micahflee.torbrowser-launcher
+        state: present
+        method: user
+
+    - name: Install Thunderbird
+      community.general.flatpak:
+        name: org.mozilla.Thunderbird
+        state: present
+        method: user
+
+    - name: Install KeePassXC
+      community.general.flatpak:
+        name: org.keepassxc.KeePassXC
+        state: present
+        method: user
+
+    - name: Install Element
+      community.general.flatpak:
+        name: im.riot.Riot
+        state: present
+        method: user
+
+    - name: Install Signal
+      community.general.flatpak:
+        name: org.signal.Signal
+        state: present
+        method: user
+
+    - name: Install VLC Media Player
+      community.general.flatpak:
+        name: org.videolan.VLC
+        state: present
+        method: user
+
+    - name: Install GNOME Podcasts
+      community.general.flatpak:
+        name: org.gnome.Podcasts
+        state: present
+        method: user
+
+    - name: Install qBittorrent
+      community.general.flatpak:
+        name: org.qbittorrent.qBittorrent
+        state: present
+        method: user
+
+    - name: Install LibreOffice
+      community.general.flatpak:
+        name: org.libreoffice.LibreOffice
+        state: present
+        method: user
+
+    - name: Install Calibre
+      community.general.flatpak:
+        name: com.calibre_ebook.calibre
+        state: present
+        method: user
+
+    - name: Install GNUCash
+      community.general.flatpak:
+        name: org.gnucash.GnuCash
+        state: present
+        method: user
+
+    - name: Install GIMP
+      community.general.flatpak:
+        name: org.gimp.GIMP
+        state: present
+        method: user
+
+    - name: Install CopyQ - Clipboard Manager
+      community.general.flatpak:
+        name: com.github.hluk.copyq
+        state: present
+        method: user
+
+    - name: Configure auto-start for CopyQ
+      copy:
+        src: ~/.local/share/flatpak/exports/share/applications/com.github.hluk.copyq.desktop
+        dest: ~/.config/autostart/com.github.hluk.copyq.desktop
+
+    - name: Install GreenWithEnvy - Nvidia monitoring tool
+      community.general.flatpak:
+        name: com.leinardi.gwe
+        state: present
+        method: user
+
+    - name: Install GNOME Extensions
+      community.general.flatpak:
+        name: org.gnome.Extensions
+        state: present
+        method: user
+
+    - name: Install Fedora Media Writer
+      community.general.flatpak:
+        name: org.fedoraproject.MediaWriter
+        state: present
+        method: user
+
+    - name: Creating Fedora Toolbox to install CLI apps
+      command: toolbox create
+
+    - name: Install ImageMagick inside the default toolbox
+      command: toolbox run sudo dnf install ImageMagick --assumeyes
