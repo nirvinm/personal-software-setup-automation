@@ -1,4 +1,4 @@
-# fedora-postinstall-automation
+# Personal workstation setup - Fedora
 Personal scripts and Ansible playbooks for configuring a fresh Fedora Silverblue/Workstation installation
 
 ## Step 1 - Update operating system:
