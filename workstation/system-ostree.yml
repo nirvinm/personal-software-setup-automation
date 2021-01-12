@@ -51,6 +51,7 @@
           virt-install \
           virt-viewer \
           virt-manager \
+          wireguard-tools \
 
     - name: Layer VeraCrypt
       command:
