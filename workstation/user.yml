@@ -123,6 +123,12 @@
         name: org.gimp.GIMP
         state: present
         method: user
+        
+    - name: Install Cheese - Webcam App
+      community.general.flatpak:
+        name: org.gnome.Cheese
+        state: present
+        method: user
 
     - name: Install CopyQ - Clipboard Manager
       community.general.flatpak:
@@ -152,9 +158,19 @@
         name: org.fedoraproject.MediaWriter
         state: present
         method: user
+        
+    - name: Install Emacs
+      community.general.flatpak:
+        name: org.gnu.emacs
+        state: present
+        method: user
 
     - name: Creating Fedora Toolbox to install CLI apps
       command: toolbox create
+      ignore_errors: yes
+      
+    - name: Install ClamAV for on-demand virus scanning
+      command: toolbox run sudo dnf install clamav clamav-update --assumeyes
 
     - name: Install ImageMagick inside the default toolbox
       command: toolbox run sudo dnf install ImageMagick --assumeyes
