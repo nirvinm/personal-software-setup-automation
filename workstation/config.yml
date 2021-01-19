@@ -38,6 +38,23 @@
         - { section: "daemon", option: "AutomaticLoginEnable", value: "True" }
         - { section: "daemon", option: "AutomaticLogin", value: "{{ username }}" }
 
+    - name: Enable Tuned for power management
+      become: yes
+      systemd:
+        name: tuned
+        enabled: yes
+        state: started
+        
+    - name: Activate Tuned - powersave profile
+      command: tuned-adm profile powersave
+      
+    - name: Enable TLP for laptop power saving
+      become: yes
+      systemd:
+        name: tlp
+        enabled: yes
+        state: started
+
     - name: Enable Cockpit
       become: yes
       systemd:
