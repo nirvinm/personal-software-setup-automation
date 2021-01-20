@@ -45,7 +45,21 @@
         name: org.mozilla.firefox
         state: present
         method: user
-
+      
+    - name: Install ffmpeg/19.08 for decoding proprietary video formats on Firefox
+      community.general.flatpak:
+        name: org.freedesktop.Platform.ffmpeg-full//19.08
+        state: present
+        method: user
+        remote: flathub
+        
+    - name: Install ffmpeg/20.08 for decoding proprietary video formats on Firefox
+      community.general.flatpak:
+        name: org.freedesktop.Platform.ffmpeg-full//20.08
+        state: present
+        method: user
+        remote: flathub
+        
     - name: Install GNOME Web
       community.general.flatpak:
         name: org.gnome.Epiphany
