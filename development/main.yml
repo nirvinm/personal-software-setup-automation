@@ -73,6 +73,54 @@
         repo: "*"
         runrefresh: yes
 
+    - name: Install essential development tools
+      become: yes
+      zypper:
+        name:
+          - git
+          - docker
+          - python3-docker-compose
+        state: present
+
+    - name: Add current user to docker group
+      become: yes
+      user:
+        name: "{{ username }}"
+        groups: docker
+        append: yes
+
+    - name: Enable docker service
+      become: yes
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Install C/C++ development tools
+      become: yes
+      zypper:
+        name:
+          - devel_basis
+          - devel_C_C++
+        type: pattern
+        state: present
+
+    - name: Install Java, .NET.. SDKs
+      become: yes
+      zypper:
+        name:
+          - java-11-openjdk
+          - dotnet-sdk-5.0
+        state: present
+
+    - name: Install IDEs
+      become: yes
+      zypper:
+        name:
+          - code
+          - emacs
+        state: present
+
     - name: Install fish shell
       become: yes
       zypper:
@@ -97,38 +145,6 @@
 
     - name: Install bass
       shell: echo "omf install bass" | fish
-
-    - name: Install Git
-      become: yes
-      zypper:
-        name: git
-        state: present
-
-    - name: Install Docker
-      become: yes
-      zypper:
-        name: docker
-        state: present
-
-    - name: Install docker-compose
-      become: yes
-      zypper:
-        name: python3-docker-compose
-        state: present
-
-    - name: Add current user to docker group
-      become: yes
-      user:
-        name: "{{ username }}"
-        groups: docker
-        append: yes
-
-    - name: Enable docker service
-      become: yes
-      systemd:
-        name: docker
-        enabled: yes
-        state: started
 
     - name: Download NVM install script
       get_url:
@@ -174,30 +190,6 @@
               nvm use default
             end
           end
-
-    - name: Install OpenJDK
-      become: yes
-      zypper:
-        name: java-11-openjdk
-        state: present
-
-    - name: Install dotnet 5 sdk
-      become: yes
-      zypper:
-        name: dotnet-sdk-5.0
-        state: present
-
-    - name: Install VSCode
-      become: yes
-      zypper:
-        name: code
-        state: present
-
-    - name: Install emacs
-      become: yes
-      zypper:
-        name: emacs
-        state: present
 
     - name: Download Fira Code fonts
       get_url:
