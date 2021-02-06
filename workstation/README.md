@@ -13,28 +13,32 @@ Personal scripts and Ansible playbooks for configuring a fresh Fedora Silverblue
 
 and reboot.
 
-## Step 2 - Install Ansible and RPMFusion:
+## Step 2 - Install Ansible:
+
+    $ pip install --user ansible
+
+## Step 3 - Add RPMFusion repository:
 
 **Silverblue**
 
-    $ rpm-ostree install ansible https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    $ rpm-ostree install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 
-and reboot to use the layered Ansible package
+and reboot to use the layered packages.
 
 **Workstation**
 
-    $ sudo dnf install ansible
+    $ sudo dnf install https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
 (No reboot required)
 
-## Step 3 - Install Ansible Collections:
+## Step 4 - Install Ansible Collections:
 
 Navigate to the directory where you've cloned this repository and execute following command to install Ansible Collections from `requirements.yml`.
 
     $ ansible-galaxy collection install -r requirements.yml
 
-## Step 4 - Install system packages:
+## Step 5 - Install system packages:
 
 Execute the `system-*.yml` playbook to install core system tools like drivers, shells, virt-manager etc.
 
@@ -48,7 +52,7 @@ Execute the `system-*.yml` playbook to install core system tools like drivers, s
 
 and reboot.
 
-## Step 5 - Configure system and services:
+## Step 6 - Configure system and services:
 
 > Note: Before running this playbook you should have rebooted the system to ensure all installed services and users are available.
 
@@ -57,7 +61,7 @@ This playbook applies custom configurations, enables systemd services and other 
     $ ansible-playbook --ask-become-pass config.yml
 
 
-## Step 6 - Install userland apps
+## Step 7 - Install userland apps
 
 Execute `user.yml` playbook to install userland applications like Firefox, LibreOffice, VLC etc. from Flathub primarily. 
 
