@@ -11,3 +11,62 @@
     - name: Echo init message
       debug:
         msg: Playing system-workstation.yml as user {{ username }}
+
+    - name: Install RPMFusion repository
+      become: yes
+      dnf:
+        name:
+          - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+          - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+        state: present
+
+    - name: Enable AppStream metadata for RPMFusion
+      become: yes
+      command: dnf groupupdate core
+
+    - name: Install hardware drivers
+      become: yes
+      dnf:
+        name:
+          - intel-media-driver
+          - akmod-nvidia
+          - xorg-x11-drv-nvidia
+          - xorg-x11-drv-nvidia-cuda
+          - xorg-x11-drv-nvidia-cuda-libs
+          - vdpauinfo
+          - libva-vdpau-driver
+          - libva-utils
+        state: present
+
+    - name: Install multimedia codecs
+      become: yes
+      dnf:
+        name: "@Multimedia"
+        state: present
+
+    - name: Install 'Virtualization' package group
+      become: yes
+      dnf:
+        name: "@virtualization"
+        state: present
+
+    - name: Install other essential packages
+      become: yes
+      dnf:
+        name:
+          - cockpit
+          - cockpit-system
+          - cockpit-podman
+          - cockpit-machines
+          - cockpit-selinux
+          - fish
+          - compsize
+          - lm_sensors
+          - smartmontools
+          - tuned
+          - tuned-profiles-compat
+          - tuned-utils
+          - gnome-tweaks
+          - firewall-config
+          - https://launchpad.net/veracrypt/trunk/1.24-update7/+download/veracrypt-1.24-Update7-CentOS-8-x86_64.rpm
+        state: present

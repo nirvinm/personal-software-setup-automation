@@ -45,15 +45,8 @@
         enabled: yes
         state: started
         
-    - name: Activate Tuned - powersave profile
-      command: tuned-adm profile powersave
-      
-    - name: Enable TLP for laptop power saving
-      become: yes
-      systemd:
-        name: tlp
-        enabled: yes
-        state: started
+    - name: Activate Tuned - Set balanced profile
+      command: tuned-adm profile balanced
 
     - name: Enable Cockpit
       become: yes
