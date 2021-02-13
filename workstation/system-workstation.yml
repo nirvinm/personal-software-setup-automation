@@ -14,16 +14,12 @@
 
     - name: Install RPMFusion repository
       become: yes
-      dnf:
-        name:
-          - https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
-          - https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-        state: present
+      shell: dnf install -y "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm" "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm"
 
     - name: Enable AppStream metadata for RPMFusion
       become: yes
-      command: dnf groupupdate core
-
+      command: dnf groupupdate core -y
+      
     - name: Install hardware drivers
       become: yes
       dnf:
@@ -37,7 +33,7 @@
           - libva-vdpau-driver
           - libva-utils
         state: present
-
+        
     - name: Install multimedia codecs
       become: yes
       dnf:
@@ -49,6 +45,10 @@
       dnf:
         name: "@virtualization"
         state: present
+        
+    - name: Install VirtualBox
+      become: yes
+      shell: dnf install -y VirtualBox kernel-devel-$(uname -r) akmod-VirtualBox
 
     - name: Install other essential packages
       become: yes
@@ -68,5 +68,11 @@
           - tuned-utils
           - gnome-tweaks
           - firewall-config
-          - https://launchpad.net/veracrypt/trunk/1.24-update7/+download/veracrypt-1.24-Update7-CentOS-8-x86_64.rpm
         state: present
+
+    - name: Install VeraCrypt
+      become: yes
+      dnf:
+        name: https://launchpad.net/veracrypt/trunk/1.24-update7/+download/veracrypt-1.24-Update7-CentOS-8-x86_64.rpm
+        state: present
+
