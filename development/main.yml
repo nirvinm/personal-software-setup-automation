@@ -12,7 +12,7 @@
       debug:
         msg: Playing main.yml as user {{ username }}
         
-    - name: Import a key from a url
+    - name: Import Microsoft GPG key
       become: yes
       ansible.builtin.rpm_key:
         state: present
@@ -25,7 +25,6 @@
         repo: "https://download.opensuse.org/repositories/shells/openSUSE_Leap_15.2/"
         state: present
         auto_import_keys: yes
-      ignore_errors: yes
 
     - name: Add OpenSUSE Text Editors repository
       become: yes
@@ -34,7 +33,6 @@
         repo: "https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.2/"
         state: present
         auto_import_keys: yes
-      ignore_errors: yes
 
     - name: Add Microsoft dotnet repository to zypper
       become: yes
@@ -42,6 +40,7 @@
         repo: "https://packages.microsoft.com/config/opensuse/15/prod.repo"
         state: present
         auto_import_keys: yes
+        overwrite_multiple: yes
       ignore_errors: yes
 
     - name: Add Microsoft VSCode repository to zypper
@@ -51,7 +50,6 @@
         repo: "https://packages.microsoft.com/yumrepos/vscode"
         state: present
         auto_import_keys: yes
-      ignore_errors: yes
 
     - name: Refresh all repos
       become: yes
@@ -59,7 +57,7 @@
         repo: "*"
         runrefresh: yes
         
-    - name: Install system essential
+    - name: Install essential system tools and services
       become: yes
       zypper:
         name: systemd-zram-service
@@ -70,7 +68,7 @@
       zypper:
         name:
           - git
-          - docker
+          - docker=19.03.11_ce-lp152.1.1 # Pinning version due to an ugly regression - https://bugzilla.opensuse.org/show_bug.cgi?id=1182168
           - python3-docker-compose
         state: present
 
@@ -145,6 +143,12 @@
 
     - name: Install NVM
       command: sh ~/nvm-install.sh
+      
+      
+    - name: Create ~/.config/fish/functions directory
+      file:
+        path:  ~/.config/fish/functions/
+        state: directory
 
     - name: Configure NVM - Create function - Step 1
       copy:
