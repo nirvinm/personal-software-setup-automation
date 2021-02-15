@@ -185,6 +185,12 @@
         state: present
         method: user
 
+    - name: Install youtube-dl
+      pip:
+        name: youtube-dl
+        executable: pip3
+        extra_args: --user
+
     - name: Creating Fedora Toolbox to install CLI apps
       command: toolbox create
       ignore_errors: yes
