@@ -62,3 +62,11 @@
       become: yes
       command:
         rpm-ostree kargs --append=rd.driver.blacklist=nouveau --append=modprobe.blacklist=nouveau --append=nvidia-drm.modeset=1
+        
+    # Silverblue does not issue TRIM to SSDs automatically if LVM + LUKS is used. Bug https://bugzilla.redhat.com/show_bug.cgi?id=1801539.
+    - name: Enable TRIM on LVM + LUKS - Workaround for bug https://bugzilla.redhat.com/show_bug.cgi?id=1801539
+      become: yes
+      command:
+        # rpm-ostree initramfs --enable --arg=-I --arg=/etc/crypttab
+        rpm-ostree kargs --append=rd.luks.options=discard
+
