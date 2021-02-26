@@ -17,6 +17,7 @@
       ansible.builtin.rpm_key:
         state: present
         key: https://packages.microsoft.com/keys/microsoft.asc
+      ignore_errors: true
 
     - name: Add OpenSUSE Shells repository
       become: yes
