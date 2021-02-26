@@ -69,7 +69,7 @@
       zypper:
         name:
           - git
-          - docker=19.03.11_ce-lp152.1.1 # Pinning version due to an ugly regression - https://bugzilla.opensuse.org/show_bug.cgi?id=1182168
+          - docker
           - python3-docker-compose
         state: present
 
