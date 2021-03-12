@@ -61,7 +61,9 @@
     - name: Install essential system tools and services
       become: yes
       zypper:
-        name: systemd-zram-service
+        name:
+          - systemd-zram-service
+          - earlyoom
         state: present
 
     - name: Install essential development tools
@@ -245,9 +247,12 @@
     - name: Enabling ZRAM Swap
       become: yes
       systemd:
-        name: zramswap.service
+        name: "{{ item }}"
         enabled: yes
         state: started
+      with_items:
+        - zramswap.service
+        - earlyoom
 
     - name: Disable unnecessary systemd services
       become: yes
