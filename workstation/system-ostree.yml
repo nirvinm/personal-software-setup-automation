@@ -23,12 +23,14 @@
           vdpauinfo \
           libva-vdpau-driver \
           libva-utils \
+          pcp \
           cockpit \
           cockpit-system \
           cockpit-ostree \
           cockpit-podman \
           cockpit-machines \
           cockpit-selinux \
+          cockpit-pcp \
           fish \
           compsize \
           lm_sensors \
