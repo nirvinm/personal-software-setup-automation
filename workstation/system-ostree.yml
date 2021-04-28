@@ -32,7 +32,6 @@
           cockpit-selinux \
           cockpit-pcp \
           fish \
-          compsize \
           lm_sensors \
           smartmontools \
           spectre-meltdown-checker \
