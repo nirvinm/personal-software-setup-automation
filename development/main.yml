@@ -11,7 +11,7 @@
     - name: Echo init message
       debug:
         msg: Playing main.yml as user {{ username }}
-        
+
     - name: Import Microsoft GPG key
       become: yes
       ansible.builtin.rpm_key:
@@ -57,7 +57,7 @@
       community.general.zypper_repository:
         repo: "*"
         runrefresh: yes
-        
+
     - name: Install essential system tools and services
       become: yes
       zypper:
@@ -126,6 +126,11 @@
         name: "{{ username }}"
         shell: /usr/bin/fish
 
+    - name: Create ~/.config/fish/functions directory
+      file:
+        path: ~/.config/fish/functions/
+        state: directory
+
     - name: Download oh-my-fish install script
       get_url:
         url: https://get.oh-my.fish
@@ -136,59 +141,13 @@
       command: fish ~/oh-my.fish
       ignore_errors: yes
 
-    - name: Install bass
-      shell: echo "omf install bass" | fish
-
-    - name: Download NVM install script
+    - name: Download Volta for managing node versions
       get_url:
-        url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh
-        dest: ~/nvm-install.sh
+        url: https://get.volta.sh
+        dest: ~/volta-install.sh
 
-    - name: Install NVM
-      command: sh ~/nvm-install.sh
-      
-      
-    - name: Create ~/.config/fish/functions directory
-      file:
-        path:  ~/.config/fish/functions/
-        state: directory
-
-    - name: Configure NVM - Create function - Step 1
-      copy:
-        dest: ~/.config/fish/functions/nvm.fish
-        content: |
-          function nvm
-            bass source ~/.nvm/nvm.sh --no-use ';' nvm $argv
-          end
-
-    - name: Configure NVM - Create function - Step 2
-      copy:
-        dest: ~/.config/fish/functions/nvm_find_nvmrc.fish
-        content: |
-          function nvm_find_nvmrc
-            bass source ~/.nvm/nvm.sh --no-use ';' nvm_find_nvmrc
-          end
-
-    - name: Configure NVM - Create function - Step 3
-      copy:
-        dest: ~/.config/fish/functions/load_nvm.fish
-        content: |
-          function load_nvm --on-variable="PWD"
-            set -l default_node_version (nvm version default)
-            set -l node_version (nvm version)
-            set -l nvmrc_path (nvm_find_nvmrc)
-            if test -n "$nvmrc_path"
-              set -l nvmrc_node_version (nvm version (cat $nvmrc_path))
-              if test "$nvmrc_node_version" = "N/A"
-                nvm install (cat $nvmrc_path)
-              else if test nvmrc_node_version != node_version
-                nvm use $nvmrc_node_version
-              end
-            else if test "$node_version" != "$default_node_version"
-              echo "Reverting to default Node version"
-              nvm use default
-            end
-          end
+    - name: Install Volta
+      command: bash ~/volta-install.sh
 
     - name: Download Fira Code fonts
       get_url:
@@ -230,7 +189,7 @@
       copy:
         dest: ~/.config/fish/config.fish
         content: |
-          set PATH $HOME/.local/bin/ $HOME/.dotnet/tools/ $HOME/.nvm/ $PATH
+          set PATH $HOME/.local/bin/ $HOME/.dotnet/tools/ $PATH
 
           # Powerline Status
           powerline-daemon -q
@@ -239,10 +198,10 @@
 
           set DOTNET_CLI_TELEMETRY_OPTOUT 1
 
-          # NVM
-          load_nvm
+          set -gx VOLTA_HOME "$HOME/.volta"
+          set -gx PATH "$VOLTA_HOME/bin" $PATH
 
-          echo "Hello there! Fish is ready for swim."
+          echo "Hello there!"
 
     - name: Enabling ZRAM Swap
       become: yes
