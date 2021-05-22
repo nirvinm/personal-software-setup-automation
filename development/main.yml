@@ -165,36 +165,6 @@
         executable: pip3
         extra_args: --user
 
-    - name: Download Fira Code fonts
-      get_url:
-        url: https://github.com/tonsky/FiraCode/releases/download/5.2/Fira_Code_v5.2.zip
-        dest: ~/Downloads/firacode_fonts.zip
-
-    - name: Create directory for FiraCode
-      file:
-        path: ~/.fonts/FiraCode
-        state: directory
-
-    - name: Extract FiraCode into ~/.fonts
-      unarchive:
-        src: ~/Downloads/firacode_fonts.zip
-        dest: ~/.fonts/FiraCode/
-
-    - name: Download Hasklig fonts
-      get_url:
-        url: https://github.com/i-tu/Hasklig/releases/download/v1.2/Hasklig-1.2.zip
-        dest: ~/Downloads/hasklig_fonts.zip
-
-    - name: Create directory for Hasklig
-      file:
-        path: ~/.fonts/Hasklig
-        state: directory
-
-    - name: Extract Hasklig into ~/.fonts
-      unarchive:
-        src: ~/Downloads/hasklig_fonts.zip
-        dest: ~/.fonts/Hasklig/
-
     - name: Install Powerline status plugin for terminal
       pip:
         name: powerline-status
@@ -220,6 +190,36 @@
           set DOTNET_CLI_TELEMETRY_OPTOUT 1
 
           echo "Hello there!"
+
+    - name: Download & install Fira Code fonts
+      block:
+        - name: Download Fira Code fonts
+          get_url:
+            url: https://github.com/tonsky/FiraCode/releases/download/5.2/Fira_Code_v5.2.zip
+            dest: ~/Downloads/firacode_fonts.zip
+        - name: Create directory for FiraCode
+          file:
+            path: ~/.fonts/FiraCode
+            state: directory
+        - name: Install FiraCode into ~/.fonts
+          unarchive:
+            src: ~/Downloads/firacode_fonts.zip
+            dest: ~/.fonts/FiraCode/
+
+    - name: Download & install Hasklig fonts
+      block:
+        - name: Download Haskling fonts
+          get_url:
+            url: https://github.com/i-tu/Hasklig/releases/download/v1.2/Hasklig-1.2.zip
+            dest: ~/Downloads/hasklig_fonts.zip
+        - name: Create directory for Hasklig
+          file:
+            path: ~/.fonts/Hasklig
+            state: directory
+        - name: Extract Hasklig into ~/.fonts
+          unarchive:
+            src: ~/Downloads/hasklig_fonts.zip
+            dest: ~/.fonts/Hasklig/
 
     - name: Enabling ZRAM Swap
       become: yes
