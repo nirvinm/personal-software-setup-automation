@@ -131,23 +131,33 @@
         path: ~/.config/fish/functions/
         state: directory
 
-    - name: Download oh-my-fish install script
-      get_url:
-        url: https://get.oh-my.fish
-        dest: ~/oh-my.fish
-        validate_certs: no
+    - name: Download & install oh-my-fish
+      block:
+        - name: Download oh-my-fish
+          get_url:
+            url: https://get.oh-my.fish
+            dest: ~/oh-my.fish
+            validate_certs: no
+        - name: Install oh-my-fish
+          command: fish ~/oh-my.fish --yes --noninteractive
 
-    - name: Install oh-my-fish
-      command: fish ~/oh-my.fish
-      ignore_errors: yes
+    - name: Download & install Stack for managing Haskell
+      block:
+        - name: Download Stack
+          get_url:
+            url: https://get.haskellstack.org/
+            dest: ~/stack-install.sh
+        - name: Install Stack
+          command: bash ~/stack-install.sh --force
 
-    - name: Download Volta for managing node versions
-      get_url:
-        url: https://get.volta.sh
-        dest: ~/volta-install.sh
-
-    - name: Install Volta
-      command: bash ~/volta-install.sh
+    - name: Download & install Volta for managing node versions
+      block:
+        - name: Download Volta
+          get_url:
+            url: https://get.volta.sh
+            dest: ~/volta-install.sh
+        - name: Install Volta
+          command: bash ~/volta-install.sh
 
     - name: Install pipenv
       pip:
@@ -210,7 +220,6 @@
           set DOTNET_CLI_TELEMETRY_OPTOUT 1
 
           echo "Hello there!"
-
 
     - name: Enabling ZRAM Swap
       become: yes
