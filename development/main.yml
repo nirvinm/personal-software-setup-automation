@@ -126,11 +126,6 @@
         name: "{{ username }}"
         shell: /usr/bin/fish
 
-    - name: Create ~/.config/fish/functions directory
-      file:
-        path: ~/.config/fish/functions/
-        state: directory
-
     - name: Download & install oh-my-fish
       block:
         - name: Download oh-my-fish
@@ -138,32 +133,23 @@
             url: https://get.oh-my.fish
             dest: ~/oh-my.fish
             validate_certs: no
+
         - name: Install oh-my-fish
           command: fish ~/oh-my.fish --yes --noninteractive
 
-    - name: Download & install Stack for managing Haskell
-      block:
-        - name: Download Stack
-          get_url:
-            url: https://get.haskellstack.org/
-            dest: ~/stack-install.sh
-        - name: Install Stack
-          command: bash ~/stack-install.sh --force
+        - name: Install fenv for fish
+          shell: omf install foreign-env
+          args:
+            executable: /usr/bin/fish
 
-    - name: Download & install Volta for managing node versions
+    - name: Download & install Nix package manager
       block:
-        - name: Download Volta
+        - name: Download Nix
           get_url:
-            url: https://get.volta.sh
-            dest: ~/volta-install.sh
-        - name: Install Volta
-          command: bash ~/volta-install.sh
-
-    - name: Install pipenv
-      pip:
-        name: pipenv
-        executable: pip3
-        extra_args: --user
+            url: https://nixos.org/nix/install
+            dest: ~/nix-install.sh
+        - name: Install Nix
+          command: sh ~/nix-install.sh
 
     - name: Install Powerline status plugin for terminal
       pip:
@@ -179,15 +165,18 @@
           set -gx PATH "$HOME/.local/bin/" $PATH
           set -gx PATH "$HOME/.dotnet/tools/" $PATH
 
-          set -gx VOLTA_HOME "$HOME/.volta"
-          set -gx PATH "$VOLTA_HOME/bin" $PATH
-
           # Powerline Status
           powerline-daemon -q
           set fish_function_path $fish_function_path "$HOME/.local/lib/python3.6/site-packages/powerline/bindings/fish"
           powerline-setup
 
           set DOTNET_CLI_TELEMETRY_OPTOUT 1
+
+          # Nix
+          if test -e $HOME/.nix-profile/etc/profile.d/nix.sh
+            fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
+          end
+          # End Nix
 
           echo "Hello there!"
 
