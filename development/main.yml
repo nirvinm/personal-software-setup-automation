@@ -22,16 +22,16 @@
     - name: Add OpenSUSE Shells repository
       become: yes
       community.general.zypper_repository:
-        name: "Shells for Linux (openSUSE_Leap_15.2)"
-        repo: "https://download.opensuse.org/repositories/shells/openSUSE_Leap_15.2/"
+        name: "Shells for Linux (OpenSUSE-Leap-15.3)"
+        repo: "https://download.opensuse.org/repositories/shells/openSUSE_Leap_15.3/"
         state: present
         auto_import_keys: yes
 
     - name: Add OpenSUSE Text Editors repository
       become: yes
       community.general.zypper_repository:
-        name: "Text editors and hex editors for Linux (openSUSE_Leap_15.2)"
-        repo: "https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.2/"
+        name: "Text editors for Linux (OpenSUSE-Leap-15.3)"
+        repo: "https://download.opensuse.org/repositories/editors/openSUSE_Leap_15.3/"
         state: present
         auto_import_keys: yes
 
@@ -173,12 +173,8 @@
           set DOTNET_CLI_TELEMETRY_OPTOUT 1
 
           # Nix
-          if test -e $HOME/.nix-profile/etc/profile.d/nix.sh
-            fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
-          end
+          fenv source $HOME/.nix-profile/etc/profile.d/nix.sh
           # End Nix
-
-          echo "Hello there!"
 
     - name: Download & install Fira Code fonts
       block:
@@ -197,7 +193,7 @@
 
     - name: Download & install Hasklig fonts
       block:
-        - name: Download Haskling fonts
+        - name: Download Hasklig fonts
           get_url:
             url: https://github.com/i-tu/Hasklig/releases/download/v1.2/Hasklig-1.2.zip
             dest: ~/Downloads/hasklig_fonts.zip
