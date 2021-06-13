@@ -102,9 +102,9 @@
         state: present
         method: user
 
-    - name: Install GNOME Podcasts
+    - name: Install gPodder
       community.general.flatpak:
-        name: org.gnome.Podcasts
+        name: org.gpodder.gpodder
         state: present
         method: user
 
